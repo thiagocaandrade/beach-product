@@ -1,0 +1,42 @@
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: beach_product
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  flyway:
+    image: flyway/flyway:latest
+    container_name: flyway
+    environment:
+      FLYWAY_URL: jdbc:mysql://localhost:3306/beach_product
+      FLYWAY_USER: root
+      FLYWAY_PASSWORD: root
+      FLYWAY_LOCATIONS: db/migration/V001__create_table_product_order.sql
+    depends_on:
+      - mysql
+    entrypoint: ["flyway", "migrate"]
+
+  app:
+    build: .
+    container_name: springbootapp
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/beach_product
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - flyway
+    entrypoint: ["java", "-jar", "target/beach-product-rental-0.0.1-SNAPSHOT.jar"]
+    ports:
+      - "8080:8080"
+
+volumes:
+  mysql-data:
