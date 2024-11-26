@@ -1,55 +1,79 @@
-# beach-product-rental
+# API BEACH-PRODUCT-RENTAL
 
-## Esse é um projecto Spring Boot para ser usado como base para o teste a seguir:
-O objetivo principal do teste é verificar o algorítimo criado pelo candidato para calcular o valor a ser pago para o funcionário.
+## Requisitos
 
-## Cenário: A empresa XYZ trabalha com aluguel de produtos que são utilizados na praia.
+Para que seja possível rodar essa aplicação, é necessário atender a alguns requisitos básicos:
 
-1. cada produto possui um valor cobrado por hora, o sistema aceita apenas valores inteiros para o campo hora;
-1. funcionário recebe uma comisão baseada no valor total cobrado pelo produto.
+- Java 11
+- Maven 3.8+
+- Mysql 8.0
+- Docker (Opcional, apenas para execução via Docker)
 
-## Produtos e comissões:
-Para SURFBOARD:
-Preço por hora: R$50,00
-Porcentagem funcionário: 15.6%
+## Instruções de Uso
 
-Para BEACH_CHAIR:
-Preço por hora: R$35,00
-Porcentagem funcionário: 5%
+Você pode rodar a aplicação de duas maneiras: **via Docker** ou **via Maven**.
 
-Para SUNSHADE:
-Preço por hora: R$40,00
-Porcentagem funcionário: 10.3%
+### Rodar via Docker
 
-Para SAND_BOARD:
-Preço por hora: R$25,00
-Porcentagem funcionário: 9%
+Se você preferir usar o Docker, siga estes passos:
 
-Para BEACH_TABLE:
-Preço por hora: R$25,00
-Porcentagem funcionário: 8.1%
+1. **Certifique-se de que o Docker está instalado e em execução.**
+2. **Configure o banco de dados Mysql** (verifique o arquivo `docker-compose.yml` para detalhes de configuração).
+3. **Execute o comando abaixo para construir e iniciar a aplicação:**
 
-## Descrição dos campos da classe ProductOrder.
-1. userName: Login do usuário;
-1. productType: Tipo do produto;
-1. timeHour: Tempo em horas que o produto ficou locado;
-1. productValue: Valor do produto por hora;
-1. productTotal: Valor do produto vezes tempo em horas locado;
-1. userAmount: Comissão a ser recebida pelo usuário(Funcionário);
+    ```bash
+    $ docker-compose up --build
+    ```
 
-## Exemplo:
-Funcionário Pedro alugou o produto SURFBOARD por 4h.
-Pedro vai receber uma comissão no valor de R$31,20 pelo aluguel do produto SURFBOARD.
+   Isso irá construir a imagem Docker e iniciar os containers definidos no arquivo `docker-compose.yml`. A aplicação estará disponível em `http://localhost:8080`.
 
-# ATENÇÃO:
-- O valor do produto, total do produto e o valor a ser pago para o funcionário devem ser salvos no banco de dados com o valor multiplicado por 100. Para o exemplo do Pedro, o valor da comissão a ser salva no banco de dados é de 3120.
-- As classes ProductOrderDTO, ProductOrder e o enum ProductType não podem ser alteradas.
-- Não é permitido criar novas entidades.
-- Fique a vontade para criar novas classes.
+### Rodar via Maven
 
-Adicione na classe ProductOrderController um método para trazer a lista de pedidos, deve existir pelo menos um campo para ser utilizado como filtro.
+Se preferir rodar a aplicação diretamente via Maven, siga estes passos:
 
-Fique a vontade para adicionar mais funcionalidades ao teste, como: criação de testes unitários, utilização de docker etc.
+1. **Certifique-se de que o Mysql está instalado e em execução localmente.**
+2. **Configure o banco de dados Mysql**:
+    - **Verifique o arquivo `application.properties`** da aplicação para garantir que as credenciais e a URL do banco de dados estão corretas. As configurações que você deve usar são:
 
+      ```properties
+      spring.datasource.url=jdbc:mysql://localhost:3306/beach_product
+      spring.datasource.username=root
+      spring.datasource.password=root
+      ```
 
-# Boa sorte!!!
+    - **Assegure-se de que o banco de dados `mysql` está criado** e que as credenciais fornecidas têm acesso a ele.
+3. **Clone o repositório da aplicação.**
+4. **Abra o projeto na sua IDE.**
+5. **Compile e execute o projeto utilizando Maven:**
+
+    ```bash
+    $ mvn spring-boot:run
+    ```
+
+   A aplicação será iniciada e estará disponível em `http://localhost:8080`.
+
+## Endpoints
+
+### Orders
+
+- **Buscar por nome funcionário**
+
+    - **URL:** `http://localhost:8080/orders?userName=Pedro`
+    - **Método HTTP:** GET
+
+- **Criar um novo produto**
+
+    - **URL:** `http://localhost:8080/orders/create`
+    - **Método HTTP:** POST
+    - **Exemplo de JSON:**
+      ```json
+      {
+            "userName": "Teste",
+            "productType": "SURFBOARD",
+            "timeHour": 4
+      }
+      ```
+- **Buscar por filtro**
+
+    - **URL:** `http://localhost:8080/orders/filter?filterField=userName&filterValue=Pedro`
+    - **Método HTTP:** GET
